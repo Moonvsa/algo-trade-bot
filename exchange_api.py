@@ -2,6 +2,7 @@ import ccxt
 from config import EXCHANGE, CANDLES_LIMIT, SYMBOLS, TIMEFRAMES
 from datetime import datetime
 import pytz
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 class ExchangeAPI:
     def __init__(self):
@@ -20,13 +21,14 @@ class ExchangeAPI:
             raise ValueError(f"Биржа {EXCHANGE} не поддерживается")
 
     def get_valid_symbols(self):
-        """Получение доступных торговых пар"""
-        return SYMBOLS
+        markets = self.exchange.load_markets()
+        return [symbol for symbol in markets if markets[symbol]['active']]
     
     def get_valid_timeframes(self):
         """Получение доступных таймфреймов"""
         return TIMEFRAMES
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     def fetch_ohlcv(self, symbol, timeframe):
         """
         Получение исторических данных

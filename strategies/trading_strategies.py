@@ -1,3 +1,4 @@
+# strategies/trading_strategies.py
 import pandas_ta as ta
 from config import STRATEGY_PARAMS
 
@@ -10,7 +11,6 @@ class TradingStrategies:
     
     @staticmethod
     def check_sma_crossover(df):
-        """Проверка пересечения цены и SMA"""
         sma = TradingStrategies.calculate_sma(df)
         if sma is None or len(df) < 2:
             return False
@@ -18,12 +18,10 @@ class TradingStrategies:
 
     @staticmethod
     def calculate_rsi(df):
-        """Расчёт Relative Strength Index"""
         return ta.rsi(df['close'], length=STRATEGY_PARAMS['rsi_period'])
     
     @staticmethod
     def check_rsi_oversold(df):
-        """Проверка RSI на перепроданность"""
         rsi_values = TradingStrategies.calculate_rsi(df)
         if rsi_values is None or len(rsi_values) < 1:
             return False
@@ -32,7 +30,6 @@ class TradingStrategies:
 
     @staticmethod
     def calculate_macd(df):
-        """Расчёт MACD"""
         macd = ta.macd(
             df['close'],
             fast=STRATEGY_PARAMS['macd_fast'],
@@ -43,7 +40,6 @@ class TradingStrategies:
 
     @staticmethod
     def check_macd_crossover(df):
-        """Проверка пересечения MACD и сигнальной линии"""
         macd, signal, _ = TradingStrategies.calculate_macd(df)
         if macd is None or signal is None or len(macd) < 2:
             return False
@@ -51,7 +47,6 @@ class TradingStrategies:
 
     @staticmethod
     def calculate_bollinger_bands(df):
-        """Расчёт Bollinger Bands"""
         bb = ta.bbands(
             df['close'],
             length=STRATEGY_PARAMS['bollinger_period'],
@@ -61,14 +56,12 @@ class TradingStrategies:
 
     @staticmethod
     def check_bollinger_breakout(df):
-        """Проверка пробоя Bollinger Bands"""
         upper, _, lower = TradingStrategies.calculate_bollinger_bands(df)
         last_close = df['close'].iloc[-1]
         return (last_close > upper.iloc[-1]) | (last_close < lower.iloc[-1])
 
     @staticmethod
     def check_volume_spike(df):
-        """Проверка аномального объёма"""
         if len(df) < 2:
             return False
         avg_volume = df['volume'].iloc[:-1].mean()

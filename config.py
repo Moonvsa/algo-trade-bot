@@ -1,7 +1,7 @@
 import pytz
 
 # Основные настройки подключения к бирже
-EXCHANGE = "binance"          # Поддерживаемые биржи: binance, bybit, okx, bybit
+EXCHANGE = "binance"          # Поддерживаемые биржи: binance, bybit, okx
 SYMBOLS = [                 # Доступные торговые пары
     'BTC/USDT', 
     'ETH/USDT', 
